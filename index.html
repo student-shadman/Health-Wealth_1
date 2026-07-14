@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Wealth - Your Personal Health Companion</title>
+    <meta name="description" content="Track your health, learn medical knowledge, and stay safe with Health Wealth - a comprehensive offline health and wellness platform for the whole family.">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --health-mint: 135 80% 75%;
+            --health-coral: 10 80% 70%;
+            --health-lavender: 270 60% 75%;
+            --health-sky: 200 80% 70%;
+            --health-cream: 40 40% 95%;
+            
+            --background: 40 20% 98%;
+            --foreground: 220 13% 13%;
+            --card: 0 0% 100%;
+            --card-foreground: 220 13% 13%;
+            --border: 220 13% 91%;
+            --primary: 135 80% 75%;
+            --primary-foreground: 220 13% 13%;
+            --muted: 220 13% 95%;
+            --muted-foreground: 220 9% 46%;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: hsl(var(--background));
+            color: hsl(var(--foreground));
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Navigation */
+        .navbar {
+            background: hsl(var(--card) / 0.95);
+            border-bottom: 1px solid hsl(var(--border));
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(8px);
+        }
+
+        .nav-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 0;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-brand svg {
+            width: 32px;
+            height: 32px;
+            color: hsl(var(--health-coral));
+            fill: hsl(var(--health-coral));
+        }
+
+        .nav-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(to right, hsl(var(--health-mint)), hsl(var(--health-lavender)));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+        }
+
+        .nav-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.375rem;
+            background: transparent;
+            color: hsl(var(--foreground));
+            cursor: pointer;
+            white-space: nowrap;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: hsl(var(--muted));
+        }
+
+        .nav-btn.active {
+            background: hsl(var(--primary));
+            color: hsl(var(--primary-foreground));
+        }
+
+        /* Cards */
+        .card {
+            background: hsl(var(--card));
+            border: 1px solid hsl(var(--border));
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1);
+        }
+
+        .card-header {
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(to right, hsl(var(--health-mint)), hsl(var(--health-sky)));
+            border-radius: 1rem;
+            padding: 2rem;
+            color: white;
+            margin-bottom: 1.5rem;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        .hero h1 {
+            font-size: 2.25rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero p {
+            font-size: 1.125rem;
+            opacity: 0.9;
+        }
+
+        .health-score {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(8px);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .score-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+        }
+
+        .score-value {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 0.75rem;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 9999px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: white;
+            border-radius: 9999px;
+            transition: width 0.5s ease;
+        }
+
+        /* Grid Layouts */
+        .grid {
+            display: grid;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .grid-4 {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+
+        /* Tracker Cards */
+        .tracker-value {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .tracker-goal {
+            font-size: 0.875rem;
+            color: hsl(var(--muted-foreground));
+        }
+
+        .tracker-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            flex: 1;
+        }
+
+        .btn-primary {
+            background: hsl(var(--health-sky));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid hsl(var(--border));
+            color: hsl(var(--foreground));
+        }
+
+        .btn-outline:hover {
+            background: hsl(var(--muted));
+        }
+
+        /* Input Fields */
+        .input-group {
+            margin-top: 1rem;
+        }
+
+        .label {
+            display: block;
+            font-size: 0.75rem;
+            margin-bottom: 0.25rem;
+            color: hsl(var(--foreground));
+        }
+
+        .input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid hsl(var(--border));
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            background: hsl(var(--card));
+            color: hsl(var(--foreground));
+        }
+
+        .input:focus {
+            outline: none;
+            border-color: hsl(var(--primary));
+        }
+
+        .textarea {
+            width: 100%;
+            min-height: 80px;
+            padding: 0.5rem;
+            border: 1px solid hsl(var(--border));
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            background: hsl(var(--card));
+            color: hsl(var(--foreground));
+            resize: vertical;
+        }
+
+        /* Mood Tracker */
+        .mood-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .mood-btn {
+            padding: 0.75rem;
+            border: 2px solid hsl(var(--border));
+            border-radius: 0.5rem;
+            background: transparent;
+            cursor: pointer;
+            font-size: 2rem;
+            transition: all 0.2s;
+        }
+
+        .mood-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .mood-btn.selected {
+            border-color: hsl(var(--health-mint));
+            background: hsl(var(--health-mint) / 0.1);
+        }
+
+        /* Emergency Guide */
+        .emergency-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .emergency-card {
+            padding: 1rem;
+            border: 2px solid hsl(var(--border));
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .emergency-card:hover {
+            border-color: hsl(var(--health-coral));
+            background: hsl(var(--health-coral) / 0.05);
+        }
+
+        .emergency-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .emergency-steps {
+            margin-top: 1rem;
+            padding-left: 1.5rem;
+        }
+
+        .emergency-steps li {
+            margin-bottom: 0.5rem;
+        }
+
+        .call-btn {
+            background: hsl(var(--health-coral));
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        /* Health Records */
+        .records-list {
+            margin-top: 1rem;
+        }
+
+        .record-item {
+            padding: 1rem;
+            border: 1px solid hsl(var(--border));
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+        }
+
+        .record-content h4 {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .record-date {
+            font-size: 0.75rem;
+            color: hsl(var(--muted-foreground));
+        }
+
+        .delete-btn {
+            background: hsl(var(--health-coral));
+            color: white;
+            border: none;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            font-size: 0.75rem;
+        }
+
+        /* BMI Calculator */
+        .result-card {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            text-align: center;
+        }
+
+        .result-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-category {
+            font-size: 1.125rem;
+        }
+
+        /* Utilities */
+        .hidden {
+            display: none !important;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-sm {
+            font-size: 0.875rem;
+        }
+
+        .text-xs {
+            font-size: 0.75rem;
+        }
+
+        .mt-4 {
+            margin-top: 1rem;
+        }
+
+        .mb-4 {
+            margin-bottom: 1rem;
+        }
+
+        .success-text {
+            color: #10b981;
+            font-weight: 500;
+        }
+
+        /* Animations */
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-slide-up {
+            animation: slideUp 0.5s ease-out;
+        }
+
+        /* Footer */
+        footer {
+            background: hsl(var(--card));
+            border-top: 1px solid hsl(var(--border));
+            margin-top: 4rem;
+            padding: 2rem 0;
+            text-align: center;
+        }
+
+        footer p {
+            color: hsl(var(--muted-foreground));
+            font-size: 0.875rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 1.75rem;
+            }
+            
+            .nav-title {
+                font-size: 1.25rem;
+            }
+
+            .grid-4 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <div class="nav-brand">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
+                    </svg>
+                    <h1 class="nav-title">Health Wealth</h1>
+                </div>
+                <div class="nav-buttons">
+                    <button class="nav-btn active" onclick="showSection('dashboard')">Dashboard</button>
+                    <button class="nav-btn" onclick="showSection('emergency')">Emergency</button>
+                    <button class="nav-btn" onclick="showSection('records')">Records</button>
+                    <button class="nav-btn" onclick="showSection('calculator')">Tools</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container" style="padding-top: 2rem; padding-bottom: 2rem;">
+        <!-- Dashboard Section -->
+        <div id="dashboard-section" class="animate-slide-up">
+            <!-- Hero -->
+            <div class="hero">
+                <h1 id="greeting">Good Morning, Guest!</h1>
+                <p>Let's take care of your health today</p>
+                
+                <div class="health-score">
+                    <div class="score-header">
+                        <span style="font-size: 1.125rem; font-weight: 600;">Your Health Score</span>
+                        <span class="score-value" id="health-score">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="health-progress" style="width: 0%"></div>
+                    </div>
+                    <p class="text-sm" style="margin-top: 0.5rem; opacity: 0.9;" id="score-message">Let's improve your wellness habits</p>
+                </div>
+            </div>
+
+            <!-- Trackers Grid -->
+            <div class="grid grid-4">
+                <!-- Water Tracker -->
+                <div class="card" style="border-color: hsl(var(--health-sky) / 0.3);">
+                    <div class="card-header">
+                        <h3 class="card-title" style="color: hsl(var(--health-sky));">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
+                            </svg>
+                            Water Intake
+                        </h3>
+                    </div>
+                    <div>
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                            <span class="tracker-value" id="water-count">0</span>
+                            <span class="tracker-goal">/ 8 glasses</span>
+                        </div>
+                        <div class="progress-bar" style="height: 0.5rem;">
+                            <div class="progress-fill" id="water-progress" style="width: 0%; background: hsl(var(--health-sky));"></div>
+                        </div>
+                        <div class="tracker-buttons">
+                            <button class="btn btn-outline" onclick="updateWater(-1)">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="5" y1="12" x2="19" y2="12"/>
+                                </svg>
+                            </button>
+                            <button class="btn btn-primary" onclick="updateWater(1)">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="12" y1="5" x2="12" y2="19"/>
+                                    <line x1="5" y1="12" x2="19" y2="12"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <p class="text-xs text-center success-text mt-4 hidden" id="water-success">🎉 Daily goal achieved!</p>
+                    </div>
+                </div>
+
+                <!-- Sleep Tracker -->
+                <div class="card" style="border-color: hsl(var(--health-lavender) / 0.3);">
+                    <div class="card-header">
+                        <h3 class="card-title" style="color: hsl(var(--health-lavender));">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+                            </svg>
+                            Sleep Hours
+                        </h3>
+                    </div>
+                    <div>
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                            <span class="tracker-value" id="sleep-count">0.0</span>
+                            <span class="tracker-goal">hours</span>
+                        </div>
+                        <div class="progress-bar" style="height: 0.5rem;">
+                            <div class="progress-fill" id="sleep-progress" style="width: 0%; background: hsl(var(--health-lavender));"></div>
+                        </div>
+                        <div class="input-group">
+                            <label class="label">Log last night's sleep</label>
+                            <input type="number" class="input" id="sleep-input" min="0" max="24" step="0.5" placeholder="0.0" onchange="updateSleep(this.value)">
+                        </div>
+                        <p class="text-xs text-center mt-4" style="color: hsl(var(--muted-foreground)); font-weight: 500;" id="sleep-quality">Quality: Not logged</p>
+                    </div>
+                </div>
+
+                <!-- Steps Tracker -->
+                <div class="card" style="border-color: hsl(var(--health-mint) / 0.3);">
+                    <div class="card-header">
+                        <h3 class="card-title" style="color: hsl(var(--health-mint));">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                            </svg>
+                            Steps Today
+                        </h3>
+                    </div>
+                    <div>
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                            <span class="tracker-value" id="steps-count">0</span>
+                            <span class="tracker-goal">/ 10,000</span>
+                        </div>
+                        <div class="progress-bar" style="height: 0.5rem;">
+                            <div class="progress-fill" id="steps-progress" style="width: 0%; background: hsl(var(--health-mint));"></div>
+                        </div>
+                        <div class="input-group">
+                            <label class="label">Update step count</label>
+                            <input type="number" class="input" id="steps-input" min="0" placeholder="0" onchange="updateSteps(this.value)">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mood Tracker -->
+                <div class="card" style="border-color: hsl(var(--health-coral) / 0.3);">
+                    <div class="card-header">
+                        <h3 class="card-title" style="color: hsl(var(--health-coral));">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+                                <line x1="9" y1="9" x2="9.01" y2="9"/>
+                                <line x1="15" y1="9" x2="15.01" y2="9"/>
+                            </svg>
+                            Mood Tracker
+                        </h3>
+                    </div>
+                    <div>
+                        <p class="text-sm mb-4" style="color: hsl(var(--muted-foreground));">How are you feeling today?</p>
+                        <div class="mood-grid">
+                            <button class="mood-btn" onclick="selectMood('😢', this)">😢</button>
+                            <button class="mood-btn" onclick="selectMood('😟', this)">😟</button>
+                            <button class="mood-btn" onclick="selectMood('😐', this)">😐</button>
+                            <button class="mood-btn" onclick="selectMood('😊', this)">😊</button>
+                            <button class="mood-btn" onclick="selectMood('😁', this)">😁</button>
+                        </div>
+                        <p class="text-xs text-center mt-4" id="mood-message" style="color: hsl(var(--muted-foreground));">Select your mood</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Health Tips -->
+            <div class="card" style="background: linear-gradient(to right, hsl(var(--health-mint) / 0.1), hsl(var(--health-sky) / 0.1));">
+                <div class="card-header">
+                    <h3 class="card-title" style="color: hsl(var(--health-mint));">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                            <line x1="12" y1="17" x2="12.01" y2="17"/>
+                        </svg>
+                        Daily Health Tip
+                    </h3>
+                </div>
+                <p id="daily-tip" style="font-size: 1rem; line-height: 1.6;">Loading tip...</p>
+            </div>
+
+            <!-- Quick Access Cards -->
+            <div class="grid grid-4 mt-4">
+                <div class="card" style="cursor: pointer; border-color: hsl(var(--health-coral) / 0.2);" onclick="showSection('emergency')">
+                    <div class="card-header">
+                        <h3 class="card-title" style="color: hsl(var(--health-coral));">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="12" y1="8" x2="12" y2="12"/>
+                                <line x1="12" y1="16" x2="12.01" y2="16"/>
+                            </svg>
+                            Emergency Guide
+                        </h3>
+                    </div>
+                    <p class="text-sm" style="color: hsl(var(--muted-foreground));">First aid & emergency contacts</p>
+                </div>
+
+                <div class="card" style="cursor: pointer; border-color: hsl(var(--health-mint) / 0.2);" onclick="showSection('records')">
+                    <div class="card-header">
+                        <h3 class="card-title" style="color: hsl(var(--health-mint));">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
+                            </svg>
+                            Health Records
+                        </h3>
+                    </div>
+                    <p class="text-sm" style="color: hsl(var(--muted-foreground));">Manage medical history</p>
+                </div>
+
+                <div class="card" style="cursor: pointer; border-color: hsl(var(--health-lavender) / 0.2);" onclick="showSection('calculator')">
+                    <div class="card-header">
+                        <h3 class="card-title" style="color: hsl(var(--health-lavender));">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="4" y="2" width="16" height="20" rx="2"/>
+                                <line x1="8" y1="6" x2="16" y2="6"/>
+                                <line x1="8" y1="10" x2="16" y2="10"/>
+                                <line x1="8" y1="14" x2="16" y2="14"/>
+                                <line x1="8" y1="18" x2="16" y2="18"/>
+                            </svg>
+                            Health Tools
+                        </h3>
+                    </div>
+                    <p class="text-sm" style="color: hsl(var(--muted-foreground));">BMI, BMR & more</p>
+                </div>
+
+                <div class="card" style="cursor: pointer; border-color: hsl(var(--health-sky) / 0.2);">
+                    <div class="card-header">
+                        <h3 class="card-title" style="color: hsl(var(--health-sky));">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                            </svg>
+                            Health Library
+                        </h3>
+                    </div>
+                    <p class="text-sm" style="color: hsl(var(--muted-foreground));">Articles & facts</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Emergency Section -->
+        <div id="emergency-section" class="hidden animate-slide-up">
+            <h2 style="font-size: 2rem; font-weight: bold; margin-bottom: 1.5rem;">Emergency Guide & First Aid</h2>
+            
+            <!-- Emergency Contacts -->
+            <div class="card mb-4" style="background: hsl(var(--health-coral) / 0.1); border-color: hsl(var(--health-coral));">
+                <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; color: hsl(var(--health-coral));">Emergency Contacts (India)</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                    <div>
+                        <p style="font-weight: 600;">Ambulance</p>
+                        <button class="call-btn" onclick="alert('Calling 108...')">📞 Call 108</button>
+                    </div>
+                    <div>
+                        <p style="font-weight: 600;">Police</p>
+                        <button class="call-btn" onclick="alert('Calling 100...')">📞 Call 100</button>
+                    </div>
+                    <div>
+                        <p style="font-weight: 600;">Fire</p>
+                        <button class="call-btn" onclick="alert('Calling 101...')">📞 Call 101</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- First Aid Guide -->
+            <div class="emergency-grid">
+                <div class="emergency-card" onclick="toggleEmergency('bleeding')">
+                    <div class="emergency-header">
+                        <h3 style="font-weight: 600; color: hsl(var(--health-coral));">🩸 Bleeding Control</h3>
+                        <span>▼</span>
+                    </div>
+                    <div id="bleeding-steps" class="hidden">
+                        <ol class="emergency-steps">
+                            <li>Apply direct pressure with clean cloth</li>
+                            <li>Elevate the injured area above heart level</li>
+                            <li>Continue pressure for 10-15 minutes</li>
+                            <li>If bleeding doesn't stop, seek medical help</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="emergency-card" onclick="toggleEmergency('burns')">
+                    <div class="emergency-header">
+                        <h3 style="font-weight: 600; color: hsl(var(--health-coral));">🔥 Burns Treatment</h3>
+                        <span>▼</span>
+                    </div>
+                    <div id="burns-steps" class="hidden">
+                        <ol class="emergency-steps">
+                            <li>Cool the burn with running water for 10-20 minutes</li>
+                            <li>Remove jewelry and tight clothing</li>
+                            <li>Cover with sterile, non-stick bandage</li>
+                            <li>Do NOT apply ice, butter, or ointments</li>
+                            <li>Seek medical help for severe burns</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="emergency-card" onclick="toggleEmergency('fracture')">
+                    <div class="emergency-header">
+                        <h3 style="font-weight: 600; color: hsl(var(--health-coral));">🦴 Fracture Care</h3>
+                        <span>▼</span>
+                    </div>
+                    <div id="fracture-steps" class="hidden">
+                        <ol class="emergency-steps">
+                            <li>Immobilize the injured area</li>
+                            <li>Apply ice packs to reduce swelling</li>
+                            <li>Do NOT try to realign the bone</li>
+                            <li>Seek immediate medical attention</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="emergency-card" onclick="toggleEmergency('cpr')">
+                    <div class="emergency-header">
+                        <h3 style="font-weight: 600; color: hsl(var(--health-coral));">❤️ CPR Steps</h3>
+                        <span>▼</span>
+                    </div>
+                    <div id="cpr-steps" class="hidden">
+                        <ol class="emergency-steps">
+                            <li>Call emergency services (108)</li>
+                            <li>Place person on firm surface</li>
+                            <li>Give 30 chest compressions (100-120/min)</li>
+                            <li>Give 2 rescue breaths</li>
+                            <li>Continue until help arrives</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="emergency-card" onclick="toggleEmergency('choking')">
+                    <div class="emergency-header">
+                        <h3 style="font-weight: 600; color: hsl(var(--health-coral));">🫁 Choking Relief</h3>
+                        <span>▼</span>
+                    </div>
+                    <div id="choking-steps" class="hidden">
+                        <ol class="emergency-steps">
+                            <li>Encourage coughing</li>
+                            <li>Give 5 back blows between shoulder blades</li>
+                            <li>Give 5 abdominal thrusts (Heimlich)</li>
+                            <li>Repeat until object is expelled</li>
+                            <li>Call emergency if unsuccessful</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Health Records Section -->
+        <div id="records-section" class="hidden animate-slide-up">
+            <h2 style="font-size: 2rem; font-weight: bold; margin-bottom: 1.5rem;">Health Records</h2>
+            
+            <!-- Personal Info -->
+            <div class="card mb-4">
+                <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem;">Personal Information</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                    <div>
+                        <label class="label">Name</label>
+                        <input type="text" class="input" id="record-name" placeholder="Your name">
+                    </div>
+                    <div>
+                        <label class="label">Age</label>
+                        <input type="number" class="input" id="record-age" placeholder="Age">
+                    </div>
+                    <div>
+                        <label class="label">Blood Group</label>
+                        <input type="text" class="input" id="record-blood" placeholder="A+, B+, O+, etc.">
+                    </div>
+                    <div>
+                        <label class="label">Weight (kg)</label>
+                        <input type="number" class="input" id="record-weight" placeholder="Weight">
+                    </div>
+                    <div>
+                        <label class="label">Height (cm)</label>
+                        <input type="number" class="input" id="record-height" placeholder="Height">
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <label class="label">Allergies</label>
+                    <textarea class="textarea" id="record-allergies" placeholder="List any allergies..."></textarea>
+                </div>
+                <button class="btn btn-primary mt-4" onclick="savePersonalInfo()">Save Information</button>
+            </div>
+
+            <!-- Medical Records -->
+            <div class="card">
+                <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem;">Medical Records</h3>
+                <div style="display: grid; gap: 1rem; margin-bottom: 1rem;">
+                    <div>
+                        <label class="label">Record Type</label>
+                        <input type="text" class="input" id="record-type" placeholder="e.g., Doctor Visit, Lab Test">
+                    </div>
+                    <div>
+                        <label class="label">Date</label>
+                        <input type="date" class="input" id="record-date">
+                    </div>
+                    <div>
+                        <label class="label">Notes</label>
+                        <textarea class="textarea" id="record-notes" placeholder="Details about this record..."></textarea>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="addMedicalRecord()">Add Record</button>
+
+                <div class="records-list" id="records-list"></div>
+            </div>
+        </div>
+
+        <!-- Calculator Section -->
+        <div id="calculator-section" class="hidden animate-slide-up">
+            <h2 style="font-size: 2rem; font-weight: bold; margin-bottom: 1.5rem;">Health Tools</h2>
+            
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+                <!-- BMI Calculator -->
+                <div class="card">
+                    <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; color: hsl(var(--health-mint));">BMI Calculator</h3>
+                    <div style="display: grid; gap: 1rem;">
+                        <div>
+                            <label class="label">Weight (kg)</label>
+                            <input type="number" class="input" id="bmi-weight" placeholder="70">
+                        </div>
+                        <div>
+                            <label class="label">Height (cm)</label>
+                            <input type="number" class="input" id="bmi-height" placeholder="170">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary mt-4" onclick="calculateBMI()">Calculate BMI</button>
+                    <div id="bmi-result" class="hidden result-card"></div>
+                </div>
+
+                <!-- BMR Calculator -->
+                <div class="card">
+                    <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; color: hsl(var(--health-lavender));">BMR Calculator</h3>
+                    <div style="display: grid; gap: 1rem;">
+                        <div>
+                            <label class="label">Weight (kg)</label>
+                            <input type="number" class="input" id="bmr-weight" placeholder="70">
+                        </div>
+                        <div>
+                            <label class="label">Height (cm)</label>
+                            <input type="number" class="input" id="bmr-height" placeholder="170">
+                        </div>
+                        <div>
+                            <label class="label">Age</label>
+                            <input type="number" class="input" id="bmr-age" placeholder="25">
+                        </div>
+                        <div>
+                            <label class="label">Gender</label>
+                            <select class="input" id="bmr-gender">
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary mt-4" onclick="calculateBMR()">Calculate BMR</button>
+                    <div id="bmr-result" class="hidden result-card"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>Health Wealth - Your Personal Health Companion | All data stored locally and privately</p>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize
+        const healthTips = [
+            "Drink at least 8 glasses of water daily to stay hydrated and support your body's functions.",
+            "Aim for 7-9 hours of quality sleep each night for optimal health and recovery.",
+            "Take a 5-minute walk every hour to improve circulation and reduce sedentary time.",
+            "Practice deep breathing for 5 minutes daily to reduce stress and improve focus.",
+            "Eat a rainbow of fruits and vegetables to get a variety of essential nutrients.",
+            "Wash your hands regularly for at least 20 seconds to prevent illness.",
+            "Maintain good posture while sitting to prevent back and neck pain.",
+            "Limit screen time before bed to improve sleep quality and reduce eye strain.",
+            "Stay connected with friends and family to support mental and emotional health.",
+            "Regular exercise boosts mood, energy levels, and overall health."
+        ];
+
+        // Check and reset daily data
+        function checkDailyReset() {
+            const today = new Date().toDateString();
+            const lastDate = localStorage.getItem('lastVisitDate');
+            
+            if (lastDate !== today) {
+                localStorage.setItem('lastVisitDate', today);
+                localStorage.setItem('waterGlasses', '0');
+                localStorage.setItem('sleepHours', '0');
+                localStorage.setItem('stepsCount', '0');
+                localStorage.setItem('dailyMood', '');
+            }
+        }
+
+        // Greeting
+        function updateGreeting() {
+            const hour = new Date().getHours();
+            let greeting = 'Good Morning';
+            if (hour >= 12 && hour < 18) greeting = 'Good Afternoon';
+            else if (hour >= 18) greeting = 'Good Evening';
+            
+            const userName = localStorage.getItem('userName') || 'Guest';
+            document.getElementById('greeting').textContent = `${greeting}, ${userName}!`;
+        }
+
+        // Health Score
+        function calculateHealthScore() {
+            const water = parseInt(localStorage.getItem('waterGlasses') || '0');
+            const sleep = parseFloat(localStorage.getItem('sleepHours') || '0');
+            const steps = parseInt(localStorage.getItem('stepsCount') || '0');
+            
+            let score = 0;
+            if (water >= 8) score += 30;
+            else score += (water / 8) * 30;
+            
+            if (sleep >= 7 && sleep <= 9) score += 35;
+            else if (sleep > 0) score += 20;
+            
+            if (steps >= 10000) score += 35;
+            else score += (steps / 10000) * 35;
+            
+            score = Math.round(score);
+            document.getElementById('health-score').textContent = score + '%';
+            document.getElementById('health-progress').style.width = score + '%';
+            
+            const message = document.getElementById('score-message');
+            if (score >= 70) message.textContent = 'Excellent! Keep it up!';
+            else if (score >= 40) message.textContent = 'Good progress, stay consistent';
+            else message.textContent = "Let's improve your wellness habits";
+        }
+
+        // Water Tracker
+        function updateWater(change) {
+            let count = parseInt(localStorage.getItem('waterGlasses') || '0');
+            count = Math.max(0, Math.min(20, count + change));
+            localStorage.setItem('waterGlasses', count.toString());
+            
+            document.getElementById('water-count').textContent = count;
+            const percentage = Math.min((count / 8) * 100, 100);
+            document.getElementById('water-progress').style.width = percentage + '%';
+            
+            const success = document.getElementById('water-success');
+            if (count >= 8) success.classList.remove('hidden');
+            else success.classList.add('hidden');
+            
+            calculateHealthScore();
+        }
+
+        // Sleep Tracker
+        function updateSleep(value) {
+            const hours = Math.max(0, Math.min(24, parseFloat(value) || 0));
+            localStorage.setItem('sleepHours', hours.toString());
+            
+            document.getElementById('sleep-count').textContent = hours.toFixed(1);
+            const percentage = Math.min((hours / 8) * 100, 100);
+            document.getElementById('sleep-progress').style.width = percentage + '%';
+            
+            const quality = document.getElementById('sleep-quality');
+            if (hours >= 7 && hours <= 9) quality.textContent = 'Quality: Excellent';
+            else if (hours >= 6) quality.textContent = 'Quality: Good';
+            else if (hours > 0) quality.textContent = 'Quality: Need more';
+            else quality.textContent = 'Quality: Not logged';
+            
+            calculateHealthScore();
+        }
+
+        // Steps Tracker
+        function updateSteps(value) {
+            const steps = Math.max(0, parseInt(value) || 0);
+            localStorage.setItem('stepsCount', steps.toString());
+            
+            document.getElementById('steps-count').textContent = steps.toLocaleString();
+            const percentage = Math.min((steps / 10000) * 100, 100);
+            document.getElementById('steps-progress').style.width = percentage + '%';
+            
+            calculateHealthScore();
+        }
+
+        // Mood Tracker
+        function selectMood(emoji, btn) {
+            document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            localStorage.setItem('dailyMood', emoji);
+            
+            const messages = {
+                '😢': "We all have tough days. Take care of yourself.",
+                '😟': "Things will get better. Stay positive!",
+                '😐': "Hope your day improves!",
+                '😊': "Great to hear! Keep that positive energy!",
+                '😁': "Fantastic! You're radiating positivity!"
+            };
+            
+            document.getElementById('mood-message').textContent = messages[emoji];
+        }
+
+        // Daily Tip
+        function updateDailyTip() {
+            const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
+            const tipIndex = dayOfYear % healthTips.length;
+            document.getElementById('daily-tip').textContent = healthTips[tipIndex];
+        }
+
+        // Section Navigation
+        function showSection(section) {
+            const sections = ['dashboard', 'emergency', 'records', 'calculator'];
+            sections.forEach(s => {
+                const el = document.getElementById(s + '-section');
+                if (el) el.classList.add('hidden');
+            });
+            
+            const activeSection = document.getElementById(section + '-section');
+            if (activeSection) activeSection.classList.remove('hidden');
+            
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            window.scrollTo(0, 0);
+        }
+
+        // Emergency Toggle
+        function toggleEmergency(type) {
+            const steps = document.getElementById(type + '-steps');
+            steps.classList.toggle('hidden');
+        }
+
+        // Health Records
+        function savePersonalInfo() {
+            const info = {
+                name: document.getElementById('record-name').value,
+                age: document.getElementById('record-age').value,
+                blood: document.getElementById('record-blood').value,
+                weight: document.getElementById('record-weight').value,
+                height: document.getElementById('record-height').value,
+                allergies: document.getElementById('record-allergies').value
+            };
+            
+            localStorage.setItem('personalInfo', JSON.stringify(info));
+            localStorage.setItem('userName', info.name || 'Guest');
+            alert('Personal information saved successfully!');
+            updateGreeting();
+        }
+
+        function loadPersonalInfo() {
+            const info = JSON.parse(localStorage.getItem('personalInfo') || '{}');
+            if (info.name) document.getElementById('record-name').value = info.name;
+            if (info.age) document.getElementById('record-age').value = info.age;
+            if (info.blood) document.getElementById('record-blood').value = info.blood;
+            if (info.weight) document.getElementById('record-weight').value = info.weight;
+            if (info.height) document.getElementById('record-height').value = info.height;
+            if (info.allergies) document.getElementById('record-allergies').value = info.allergies;
+        }
+
+        function addMedicalRecord() {
+            const type = document.getElementById('record-type').value;
+            const date = document.getElementById('record-date').value;
+            const notes = document.getElementById('record-notes').value;
+            
+            if (!type || !date) {
+                alert('Please fill in type and date');
+                return;
+            }
+            
+            const records = JSON.parse(localStorage.getItem('medicalRecords') || '[]');
+            records.push({ type, date, notes, id: Date.now() });
+            localStorage.setItem('medicalRecords', JSON.stringify(records));
+            
+            document.getElementById('record-type').value = '';
+            document.getElementById('record-date').value = '';
+            document.getElementById('record-notes').value = '';
+            
+            loadMedicalRecords();
+        }
+
+        function loadMedicalRecords() {
+            const records = JSON.parse(localStorage.getItem('medicalRecords') || '[]');
+            const list = document.getElementById('records-list');
+            
+            if (records.length === 0) {
+                list.innerHTML = '<p class="text-sm" style="color: hsl(var(--muted-foreground)); margin-top: 1rem;">No records yet</p>';
+                return;
+            }
+            
+            list.innerHTML = records.map(record => `
+                <div class="record-item">
+                    <div class="record-content">
+                        <h4>${record.type}</h4>
+                        <p class="text-sm">${record.notes}</p>
+                        <p class="record-date">${new Date(record.date).toLocaleDateString()}</p>
+                    </div>
+                    <button class="delete-btn" onclick="deleteRecord(${record.id})">Delete</button>
+                </div>
+            `).join('');
+        }
+
+        function deleteRecord(id) {
+            let records = JSON.parse(localStorage.getItem('medicalRecords') || '[]');
+            records = records.filter(r => r.id !== id);
+            localStorage.setItem('medicalRecords', JSON.stringify(records));
+            loadMedicalRecords();
+        }
+
+        // Calculators
+        function calculateBMI() {
+            const weight = parseFloat(document.getElementById('bmi-weight').value);
+            const height = parseFloat(document.getElementById('bmi-height').value) / 100;
+            
+            if (!weight || !height) {
+                alert('Please enter valid values');
+                return;
+            }
+            
+            const bmi = (weight / (height * height)).toFixed(1);
+            let category = '';
+            let color = '';
+            
+            if (bmi < 18.5) {
+                category = 'Underweight';
+                color = 'hsl(var(--health-sky))';
+            } else if (bmi < 25) {
+                category = 'Normal';
+                color = 'hsl(var(--health-mint))';
+            } else if (bmi < 30) {
+                category = 'Overweight';
+                color = 'hsl(45 93% 47%)';
+            } else {
+                category = 'Obese';
+                color = 'hsl(var(--health-coral))';
+            }
+            
+            const result = document.getElementById('bmi-result');
+            result.style.background = color + ' / 0.1';
+            result.style.borderLeft = '4px solid ' + color;
+            result.innerHTML = `
+                <div class="result-value" style="color: ${color}">${bmi}</div>
+                <div class="result-category">${category}</div>
+            `;
+            result.classList.remove('hidden');
+        }
+
+        function calculateBMR() {
+            const weight = parseFloat(document.getElementById('bmr-weight').value);
+            const height = parseFloat(document.getElementById('bmr-height').value);
+            const age = parseInt(document.getElementById('bmr-age').value);
+            const gender = document.getElementById('bmr-gender').value;
+            
+            if (!weight || !height || !age) {
+                alert('Please enter valid values');
+                return;
+            }
+            
+            let bmr;
+            if (gender === 'male') {
+                bmr = 10 * weight + 6.25 * height - 5 * age + 5;
+            } else {
+                bmr = 10 * weight + 6.25 * height - 5 * age - 161;
+            }
+            
+            bmr = Math.round(bmr);
+            
+            const result = document.getElementById('bmr-result');
+            result.style.background = 'hsl(var(--health-lavender) / 0.1)';
+            result.style.borderLeft = '4px solid hsl(var(--health-lavender))';
+            result.innerHTML = `
+                <div class="result-value" style="color: hsl(var(--health-lavender))">${bmr}</div>
+                <div class="result-category">calories/day</div>
+                <p class="text-sm mt-4" style="color: hsl(var(--muted-foreground));">This is your Basal Metabolic Rate - the calories your body needs at rest.</p>
+            `;
+            result.classList.remove('hidden');
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', () => {
+            checkDailyReset();
+            updateGreeting();
+            updateDailyTip();
+            calculateHealthScore();
+            
+            // Load saved data
+            const water = parseInt(localStorage.getItem('waterGlasses') || '0');
+            const sleep = parseFloat(localStorage.getItem('sleepHours') || '0');
+            const steps = parseInt(localStorage.getItem('stepsCount') || '0');
+            const mood = localStorage.getItem('dailyMood') || '';
+            
+            document.getElementById('water-count').textContent = water;
+            document.getElementById('water-progress').style.width = Math.min((water / 8) * 100, 100) + '%';
+            if (water >= 8) document.getElementById('water-success').classList.remove('hidden');
+            
+            document.getElementById('sleep-count').textContent = sleep.toFixed(1);
+            document.getElementById('sleep-input').value = sleep || '';
+            document.getElementById('sleep-progress').style.width = Math.min((sleep / 8) * 100, 100) + '%';
+            updateSleep(sleep);
+            
+            document.getElementById('steps-count').textContent = steps.toLocaleString();
+            document.getElementById('steps-input').value = steps || '';
+            document.getElementById('steps-progress').style.width = Math.min((steps / 10000) * 100, 100) + '%';
+            
+            if (mood) {
+                const moodBtns = document.querySelectorAll('.mood-btn');
+                moodBtns.forEach(btn => {
+                    if (btn.textContent.trim() === mood) {
+                        btn.classList.add('selected');
+                        selectMood(mood, btn);
+                    }
+                });
+            }
+            
+            loadPersonalInfo();
+            loadMedicalRecords();
+        });
+    </script>
+</body>
+</html>
